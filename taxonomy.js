@@ -163,7 +163,7 @@ const TAXONOMY = [
   {
     id: 'food',
     label: 'Food & Drink',
-    emoji: '🍜',
+    emoji: '🍽️',
     icon: '<path d="M-16,-4 h32 v18 a16,16 0 0 1 -16,16 a16,16 0 0 1 -16,-16 Z" fill="#37323e" transform="translate(50,54)"/><path d="M16,2 h8 a8,8 0 0 1 0,16 h-6" fill="none" stroke="#37323e" stroke-width="4" transform="translate(50,54)"/>',
     subcategories: [
       {
@@ -283,7 +283,7 @@ const TAXONOMY = [
   {
     id: 'new-experience',
     label: 'New Experience',
-    emoji: '✨',
+    emoji: '🧭',
     icon: '<path d="M-22,14 L-4,-16 L8,4 L16,-8 L26,14 Z" fill="#37323e" transform="translate(50,50)"/><circle cx="46" cy="24" r="4" fill="#6198ff"/>',
     subcategories: [
       {
@@ -475,7 +475,7 @@ const TAXONOMY = [
   {
     id: 'out-and-about',
     label: 'Out & About',
-    emoji: '🧭',
+    emoji: '🛍️',
     icon: '<path d="M-16,-2 h32 v34 h-32 Z" fill="#37323e" transform="translate(50,54)"/><path d="M-8,-2 a8,10 0 0 1 16,0" fill="none" stroke="#6198ff" stroke-width="4" transform="translate(50,54)"/>',
     subcategories: [
       {
@@ -563,7 +563,7 @@ const TAXONOMY = [
   {
     id: 'chill-hangout',
     label: 'Chill & Hangout',
-    emoji: '☕',
+    emoji: '🌿',
     icon: '<circle cx="50" cy="54" r="26" fill="none" stroke="#37323e" stroke-width="4"/><circle cx="50" cy="54" r="10" fill="#6198ff"/>',
     subcategories: [
       {
