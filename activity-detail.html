@@ -106,7 +106,7 @@
     document.getElementById('detail-tags').innerHTML = pick.tags.map(t => `<span class="detail-tag">${t}</span>`).join('');
 
     const topTag = pick.tags.find(t => /[a-zA-Z]/.test(t)) || pick.tags[0];
-    document.getElementById('why-text').innerHTML = `Matched to your interests — you told us you're into <strong>${topTag.replace(/^[^\w]+/, '')}</strong>, and this fits your usual budget and time preferences too.`;
+    document.getElementById('why-text').innerHTML = `Matched to your mood — you're feeling into <strong>${topTag.replace(/^[^\w]+/, '')}</strong> right now, and this fits.`;
 
     document.getElementById('back-btn').addEventListener('click', () => history.back());
     document.getElementById('directions-btn').addEventListener('click', () => { window.location.href = 'directions.html'; });
