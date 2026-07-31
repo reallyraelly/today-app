@@ -257,6 +257,7 @@
     const spinBtn = document.getElementById('spin-btn');
     const spinAgainBtn = document.getElementById('spin-again-btn');
     const pickLabel = document.getElementById('pick-label');
+    let currentPick = null;
 
     // ---- Mood-check: mood/subcategory selection, sticky per session ----
     const moodPicker = document.getElementById('mood-picker');
@@ -296,10 +297,7 @@
 
     function confirmMood(categoryId, subcategoryId) {
       setSessionMood(categoryId, subcategoryId);
-      showMoodPill();
-      moodPicker.classList.add('hidden');
-      pickLabel.classList.remove('hidden');
-      card.classList.remove('hidden');
+      showMoodCheckOrPickCard();
     }
 
     // Returns true if the pill was rendered from valid session state, false if
@@ -342,22 +340,19 @@
       } else {
         moodPill.classList.add('hidden');
         moodPicker.classList.remove('hidden');
+        pickLabel.textContent = 'Ready when you are';
         pickLabel.classList.add('hidden');
         card.classList.add('hidden');
+        card.classList.remove('revealed');
+        moodStep2.classList.add('hidden');
+        moodStep1.classList.remove('hidden');
+        currentPick = null;
       }
     }
 
     document.getElementById('mood-change-btn').addEventListener('click', () => {
       clearSessionMood();
-      card.classList.add('hidden');
-      card.classList.remove('revealed');
-      moodPill.classList.add('hidden');
-      pickLabel.textContent = 'Ready when you are';
-      pickLabel.classList.add('hidden');
-      moodStep2.classList.add('hidden');
-      moodStep1.classList.remove('hidden');
-      moodPicker.classList.remove('hidden');
-      currentPick = null;
+      showMoodCheckOrPickCard();
     });
 
     renderStep1();
@@ -417,8 +412,6 @@
       spinBtn.disabled = false;
       spinAgainBtn.disabled = false;
     }
-
-    let currentPick = null;
 
     spinBtn.addEventListener('click', runSpin);
     spinAgainBtn.addEventListener('click', () => {
