@@ -41,6 +41,8 @@ fitnessCardio.forEach(item => {
   assert.strictEqual(item.categoryLabel, 'Fitness & Move');
   assert.strictEqual(item.subcategoryId, 'cardio');
   assert.ok(item.title && item.description);
+  assert.ok(typeof item.categoryIcon === 'string' && item.categoryIcon.length > 0);
+  assert.strictEqual(item.subcategoryLabel, 'Cardio');
 });
 
 const totalItems = TAXONOMY.reduce((sum, c) => sum + c.subcategories.reduce((s2, sub) => s2 + sub.items.length, 0), 0);
@@ -49,5 +51,6 @@ assert.strictEqual(surprisePool.length, totalItems);
 
 assert.deepStrictEqual(getPool(TAXONOMY, 'not-a-category', 'x'), []);
 assert.deepStrictEqual(getPool(TAXONOMY, 'fitness', 'not-a-subcategory'), []);
+assert.deepStrictEqual(getPool(TAXONOMY, null, null), []);
 
 console.log('All taxonomy.js tests passed.');
