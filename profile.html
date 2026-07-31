@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Profile</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: 96px; }
+
+  .profile-header { display: flex; flex-direction: column; align-items: center; margin-bottom: var(--space-6); }
+  .profile-avatar { width: 76px; height: 76px; border-radius: 24px; margin-bottom: var(--space-3); }
+  .profile-header h1 { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin: 0 0 2px; }
+  .profile-header p { font-size: 13px; color: var(--color-text-soft); margin: 0; }
+
+  .section-title { font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-soft); margin: 0 0 var(--space-3); text-align: left; }
+
+  .pref-card {
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    box-shadow: var(--shadow-card);
+    margin-bottom: var(--space-6);
+  }
+  .pref-row { margin-bottom: var(--space-3); }
+  .pref-row:last-child { margin-bottom: 0; }
+  .pref-row-label { font-size: 11px; color: var(--color-text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .pref-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pref-tag { padding: 5px 12px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 12px; font-weight: 500; }
+
+  .settings-list {
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    padding: 15px var(--space-4);
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    background: none;
+    cursor: pointer;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row svg.icon { width: 20px; height: 20px; color: var(--color-accent); flex-shrink: 0; }
+  .settings-row span { flex: 1; font-family: var(--font-heading); font-size: 14px; font-weight: 500; color: var(--color-text); }
+  .settings-row svg.chevron { width: 16px; height: 16px; color: var(--color-text-soft); flex-shrink: 0; }
+  .settings-row.danger span { color: #e0665f; }
+  .settings-row.danger svg.icon { color: #e0665f; }
+  .settings-list--spaced { margin-bottom: var(--space-6); }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="profile-header">
+      <img class="profile-avatar" src="assets/logo.png" alt="" />
+      <h1>Alex Tan</h1>
+      <p>alex.tan@email.com</p>
+    </div>
+
+    <p class="section-title">Preferences</p>
+    <div class="settings-list settings-list--spaced">
+      <button type="button" class="settings-row" data-href="preferences.html">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 8h4M18 16h4"/></svg>
+        <span>Your Preferences</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row" data-href="history.html">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <span>History</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <p class="section-title">Settings</p>
+    <div class="settings-list">
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Notifications</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
+        <span>Language — English</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <span>Dark Mode</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        <span>Units — Kilometers</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>
+        <span>Privacy &amp; Data</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+        <span>Help &amp; Support</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
+        <span>About · v0.1.0</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row danger" data-href="index.html">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Log Out</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <button type="button" class="settings-row danger">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+        <span>Delete Account</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button type="button" class="nav-item" data-href="home-single.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v9h14v-9"/></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" class="nav-item" data-href="saved.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
+      <span>Saved</span>
+    </button>
+    <button type="button" class="nav-item active" data-href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span>Profile</span>
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

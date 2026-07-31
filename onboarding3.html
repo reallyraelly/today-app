@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Personalise</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: var(--space-7); }
+
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+    z-index: 10;
+  }
+  .loading-overlay.show { opacity: 1; pointer-events: auto; }
+  .loading-overlay img { width: 96px; height: 96px; border-radius: 24px; margin-bottom: var(--space-3); }
+  .loading-line {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--color-text-soft);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 350ms ease, transform 350ms ease;
+    margin: 0;
+  }
+  .loading-line.in { opacity: 1; transform: translateY(0); }
+
+  .edit-back-btn {
+    display: none;
+    width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+    margin-bottom: var(--space-4);
+  }
+  .edit-back-btn svg { width: 20px; height: 20px; color: var(--color-text); }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <button class="edit-back-btn" id="edit-back-btn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="progress-dots" id="progress-dots">
+      <span class="active"></span><span class="active"></span><span class="active"></span>
+    </div>
+
+    <h1 class="title">Almost done!</h1>
+    <p class="subtitle">Help us personalise your recommendations.</p>
+
+    <h2 class="section-title">Budget</h2>
+    <div class="slider" id="budget-slider" data-labels="Free,Under $20,$20–50,$50+,Treat Myself">
+      <div class="slider-tooltip"></div>
+      <div class="slider-track">
+        <div class="slider-fill"></div>
+        <div class="slider-handle" tabindex="0"></div>
+      </div>
+      <div class="slider-end-labels"><span></span><span></span></div>
+    </div>
+
+    <h2 class="section-title">Travel Distance</h2>
+    <div class="slider" id="distance-slider" data-labels="5 km,10 km,20 km,Anywhere">
+      <div class="slider-tooltip"></div>
+      <div class="slider-track">
+        <div class="slider-fill"></div>
+        <div class="slider-handle" tabindex="0"></div>
+      </div>
+      <div class="slider-end-labels"><span></span><span></span></div>
+    </div>
+
+    <h2 class="section-title">Available Time</h2>
+    <div class="slider" id="time-slider" data-labels="1 Hour,Half Day,Full Day,Weekend">
+      <div class="slider-tooltip"></div>
+      <div class="slider-track">
+        <div class="slider-fill"></div>
+        <div class="slider-handle" tabindex="0"></div>
+      </div>
+      <div class="slider-end-labels"><span></span><span></span></div>
+    </div>
+
+    <h2 class="section-title">Where do you live? 🇸🇬</h2>
+    <div class="option-row" id="region-row">
+      <button type="button" class="option-card" data-group="region">North</button>
+      <button type="button" class="option-card" data-group="region">West</button>
+      <button type="button" class="option-card" data-group="region">East</button>
+      <button type="button" class="option-card" data-group="region">Central</button>
+      <button type="button" class="option-card" data-group="region">Northwest</button>
+      <button type="button" class="option-card" data-group="region">Northeast</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <button class="btn btn-primary" id="start-btn">Start Exploring ✨</button>
+  </div>
+
+  <div class="loading-overlay" id="loading-overlay">
+    <img src="assets/logo.png" alt="Today" />
+    <div id="loading-lines"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const budgetSlider = initSlider(document.getElementById('budget-slider'));
+    const distanceSlider = initSlider(document.getElementById('distance-slider'));
+    const timeSlider = initSlider(document.getElementById('time-slider'));
+    initSelectable('#region-row .option-card', { group: true });
+
+    function saveOnboarding3() {
+      localStorage.setItem('userBudget', budgetSlider.get());
+      localStorage.setItem('userDistance', distanceSlider.get());
+      localStorage.setItem('userTime', timeSlider.get());
+      const region = document.querySelector('#region-row .option-card.selected');
+      if (region) localStorage.setItem('userRegion', region.textContent.trim());
+    }
+
+    const isEditMode = sessionStorage.getItem('onboardingEditMode') === 'true';
+
+    if (isEditMode) {
+      document.getElementById('progress-dots').style.display = 'none';
+      const editBackBtn = document.getElementById('edit-back-btn');
+      editBackBtn.style.display = 'flex';
+      editBackBtn.addEventListener('click', () => { window.location.href = 'onboarding2.html'; });
+      document.getElementById('start-btn').textContent = 'Save Changes';
+    }
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+      saveOnboarding3();
+      if (isEditMode) {
+        sessionStorage.removeItem('onboardingEditMode');
+        window.location.href = 'profile.html';
+        return;
+      }
+      document.getElementById('loading-overlay').classList.add('show');
+      runLoadingSequence(
+        document.getElementById('loading-lines'),
+        [
+          'Learning your interests...',
+          'Finding hidden gems...',
+          'Personalising recommendations...',
+          'Almost ready...'
+        ],
+        400,
+        () => { window.location.href = 'home-single.html'; }
+      );
+    });
+  </script>
+</body>
+</html>

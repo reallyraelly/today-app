@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weekend — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Work+Sans:wght@500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --color-bg: #fffbc9;
+    --color-card: #fefeff;
+    --color-text: #37323e;
+    --color-accent: #6198ff;
+    --color-border: rgba(55, 50, 62, 0.1);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .header {
+    text-align: center;
+    padding: 0 24px;
+    position: fixed;
+    left: 50%;
+    width: 100%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(14px);
+    transition: top 900ms cubic-bezier(0.22, 1, 0.36, 1), filter 900ms ease;
+    z-index: 1;
+  }
+
+  .header.settled { top: 145px; filter: blur(0px); }
+
+  .tagline {
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+
+  .tagline.show { opacity: 1; }
+
+  @property --hole {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
+  }
+
+  .landing-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .sky {
+    position: absolute;
+    inset: 0;
+    background-image: url('assets/landing-sky.jpg');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1);
+    opacity: 1;
+    --hole: 0%;
+    -webkit-mask-image: radial-gradient(circle at 50% 42%, transparent var(--hole), #000 calc(var(--hole) + 20%));
+    mask-image: radial-gradient(circle at 50% 42%, transparent var(--hole), #000 calc(var(--hole) + 20%));
+    transition: transform 500ms ease-in, --hole 1400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease 1300ms;
+  }
+
+  .landing-overlay.zoom .sky { transform: scale(1.18); }
+
+  /* Clouds dissolve outward from the centre, leaving residual pieces
+     lingering near the edges before the final opacity cleanup. */
+  .landing-overlay.dissolve .sky { --hole: 85%; opacity: 0; }
+
+  .header h1 {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 600;
+    font-size: 48px;
+    color: var(--color-text);
+    margin: 0;
+    clip-path: inset(0 0 0 42%);
+    transition: clip-path 1400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .header.reveal h1 { clip-path: inset(0 0 0 0%); }
+
+  .header p {
+    font-family: "Work Sans", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 1.28px;
+    color: var(--color-text);
+    margin: 12px 0 0;
+  }
+
+  .card {
+    background: var(--color-card);
+    width: min(376px, calc(100% - 32px));
+    border-radius: 30px 30px 0 0;
+    margin-top: 60px;
+    padding: 40px 26px 48px;
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    overflow-y: auto;
+    transform: translate(-50%, 120%);
+    transition: transform 550ms cubic-bezier(0.16, 1, 0.3, 1), top 400ms ease, height 400ms ease, margin-top 400ms ease;
+    z-index: 2;
+  }
+
+  .card.in { transform: translate(-50%, 0); }
+
+  /* Register / Forgot Password share this taller card: title + white
+     area sit higher than the branded Login card. */
+  .card.secondary {
+    top: 96px;
+    height: calc(100% - 96px);
+    margin-top: 0;
+  }
+
+  .panel { display: none; flex-direction: column; gap: 20px; width: 100%; }
+  .panel.active { display: flex; }
+
+  .panel h2 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 40px;
+    color: var(--color-accent);
+    margin: 0 0 6px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: var(--color-accent);
+  }
+
+  .field .input-wrap { position: relative; }
+
+  .field input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: var(--color-text);
+    background: var(--color-card);
+  }
+
+  .field input:focus { outline: none; border-color: var(--color-accent); }
+
+  .eye-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--color-text);
+    display: flex;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+  }
+
+  .remember { display: flex; align-items: center; gap: 6px; color: var(--color-text); }
+  .remember input { width: 18px; height: 18px; }
+
+  .agree-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: var(--color-text);
+  }
+  .agree-row input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; }
+  .agree-row .accent { color: var(--color-accent); }
+
+  a.link, .link-btn {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .otp-row { display: flex; justify-content: space-between; align-items: center; }
+  .otp-row .send { font-family: "Poppins", sans-serif; font-weight: 500; font-size: 14px; color: var(--color-text); background: none; border: none; cursor: pointer; padding: 0; }
+  .otp-row .resend { font-size: 13px; color: var(--color-accent); }
+
+  .btn {
+    height: 48px;
+    border-radius: 4px;
+    border: none;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--color-accent); color: var(--color-card); }
+  .btn-ghost { background: transparent; color: var(--color-accent); }
+  .btn-quiet { background: transparent; color: var(--color-text); font-size: 12px; }
+
+  .actions { display: flex; flex-direction: column; gap: 4px; }
+</style>
+</head>
+<body>
+  <div class="landing-overlay" id="landing-overlay">
+    <div class="sky" id="sky"></div>
+  </div>
+
+  <div class="header" id="header">
+    <h1>Weekend</h1>
+    <p class="tagline" id="tagline">STOP DOOMSCROLLING<br />START DOING</p>
+  </div>
+
+  <div class="card" id="card">
+    <form class="panel active" id="login-panel">
+      <h2>Login</h2>
+      <div class="field">
+        <label for="login-email">Email</label>
+        <div class="input-wrap"><input id="login-email" type="email" /></div>
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <div class="input-wrap">
+          <input id="login-password" type="password" />
+          <button type="button" class="eye-toggle" data-target="login-password" aria-label="Show password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="remember"><input type="checkbox" />Remember me</label>
+        <button type="button" class="link-btn" data-goto="forgot-panel">Forgot Password</button>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="button" class="btn btn-ghost" data-goto="register-panel">Register</button>
+        <button type="button" class="btn btn-quiet">Continue as Guest</button>
+      </div>
+    </form>
+
+    <form class="panel" id="forgot-panel">
+      <h2>Forgot Pass</h2>
+      <div class="field">
+        <label for="forgot-email">Email</label>
+        <div class="input-wrap"><input id="forgot-email" type="email" /></div>
+      </div>
+      <div class="otp-row">
+        <button type="button" class="send" id="send-otp">Send OTP</button>
+        <span class="resend" id="resend-timer"></span>
+      </div>
+      <div class="field">
+        <label for="otp">OTP</label>
+        <div class="input-wrap"><input id="otp" type="text" inputmode="numeric" /></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Verify</button>
+        <button type="button" class="link-btn" data-goto="login-panel" style="align-self:center;margin-top:8px;">Back to Login</button>
+      </div>
+    </form>
+
+    <form class="panel" id="register-panel">
+      <h2>Register</h2>
+      <div class="field">
+        <label for="register-name">Name</label>
+        <div class="input-wrap"><input id="register-name" type="text" /></div>
+      </div>
+      <div class="field">
+        <label for="register-email">Email</label>
+        <div class="input-wrap"><input id="register-email" type="email" /></div>
+      </div>
+      <div class="field">
+        <label for="register-password">Password</label>
+        <div class="input-wrap">
+          <input id="register-password" type="password" />
+          <button type="button" class="eye-toggle" data-target="register-password" aria-label="Show password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="register-confirm">Confirm Password</label>
+        <div class="input-wrap">
+          <input id="register-confirm" type="password" />
+          <button type="button" class="eye-toggle" data-target="register-confirm" aria-label="Show password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <label class="agree-row">
+        <input type="checkbox" />
+        <span>I <span class="accent">agree</span> to all terms and conditions</span>
+      </label>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="button" class="link-btn" data-goto="login-panel" style="align-self:center;margin-top:8px;">Login</button>
+      </div>
+    </form>
+
+    <form class="panel" id="reset-panel">
+      <h2>Reset Pass</h2>
+      <div class="field">
+        <label for="reset-password">Password</label>
+        <div class="input-wrap">
+          <input id="reset-password" type="password" />
+          <button type="button" class="eye-toggle" data-target="reset-password" aria-label="Show password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="reset-confirm">Confirm Password</label>
+        <div class="input-wrap">
+          <input id="reset-confirm" type="password" />
+          <button type="button" class="eye-toggle" data-target="reset-confirm" aria-label="Show password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+
+<script>
+  const card = document.getElementById('card');
+  const overlay = document.getElementById('landing-overlay');
+  const header = document.getElementById('header');
+  const tagline = document.getElementById('tagline');
+
+  setTimeout(() => overlay.classList.add('zoom'), 200);       // 0.2s: sky illustration zooms in, still whole (500ms)
+  setTimeout(() => {                                          // 0.7s: clouds dissolve outward from centre while
+    overlay.classList.add('dissolve');                        //       "Weekend" reveals left-to-right, in sync (1400ms)
+    header.classList.add('reveal');
+  }, 700);
+  setTimeout(() => overlay.remove(), 2350);                    // 2.35s: dissolve finished, drop the overlay from the DOM
+  setTimeout(() => header.classList.add('settled'), 2500);     // 2.5s: blurry centered logo rises + sharpens together (900ms)
+  setTimeout(() => tagline.classList.add('show'), 3400);       // 3.4s: tagline fades in once logo has settled
+  setTimeout(() => card.classList.add('in'), 3800);            // 3.8s: login card rises into place
+
+  document.querySelectorAll('.eye-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  function setPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    card.classList.toggle('secondary', id !== 'login-panel');
+  }
+
+  document.querySelectorAll('[data-goto]').forEach(btn => {
+    btn.addEventListener('click', () => setPanel(btn.dataset.goto));
+  });
+
+  let resendTimer = null;
+  document.getElementById('send-otp').addEventListener('click', () => {
+    let seconds = 59;
+    const label = document.getElementById('resend-timer');
+    clearInterval(resendTimer);
+    label.textContent = `Resend in ${seconds}s`;
+    resendTimer = setInterval(() => {
+      seconds -= 1;
+      label.textContent = seconds > 0 ? `Resend in ${seconds}s` : '';
+      if (seconds <= 0) clearInterval(resendTimer);
+    }, 1000);
+  });
+
+  document.getElementById('login-panel').addEventListener('submit', e => e.preventDefault());
+  document.getElementById('forgot-panel').addEventListener('submit', e => { e.preventDefault(); setPanel('reset-panel'); });
+  document.getElementById('register-panel').addEventListener('submit', e => { e.preventDefault(); setPanel('login-panel'); });
+  document.getElementById('reset-panel').addEventListener('submit', e => { e.preventDefault(); setPanel('login-panel'); });
+</script>
+</body>
+</html>

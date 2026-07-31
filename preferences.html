@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Preferences</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: var(--space-6); }
+
+  .detail-topbar { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .back-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .back-btn svg { width: 20px; height: 20px; color: var(--color-text); }
+  .detail-topbar h1 { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin: 0; text-align: left; }
+
+  .pref-card {
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    box-shadow: var(--shadow-card);
+    margin-bottom: var(--space-5);
+  }
+  .pref-row { margin-bottom: var(--space-4); }
+  .pref-row:last-child { margin-bottom: 0; }
+  .pref-row-label { font-size: 11px; color: var(--color-text-soft); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .pref-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pref-tag { padding: 5px 12px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 12px; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="detail-topbar">
+      <button class="back-btn" id="back-btn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h1>Your Preferences</h1>
+    </div>
+
+    <div class="pref-card">
+      <div class="pref-row">
+        <div class="pref-row-label">Interests</div>
+        <div class="pref-tags" id="pref-interests"></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-row-label">Vibe</div>
+        <div class="pref-tags" id="pref-vibes"></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-row-label">Budget</div>
+        <div class="pref-tags" id="pref-budget"></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-row-label">Travel Distance</div>
+        <div class="pref-tags" id="pref-distance"></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-row-label">Available Time</div>
+        <div class="pref-tags" id="pref-time"></div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-row-label">Region</div>
+        <div class="pref-tags" id="pref-region"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="edit-btn">Edit Preferences</button>
+  </div>
+
+  <script>
+    function renderTags(elId, values) {
+      document.getElementById(elId).innerHTML = values.map(v => `<span class="pref-tag">${v}</span>`).join('');
+    }
+
+    const interests = JSON.parse(localStorage.getItem('userInterests') || 'null') || ['Not set yet'];
+    const vibes = JSON.parse(localStorage.getItem('userVibes') || 'null') || ['Not set yet'];
+    const budget = localStorage.getItem('userBudget') || 'Not set yet';
+    const distance = localStorage.getItem('userDistance') || 'Not set yet';
+    const time = localStorage.getItem('userTime') || 'Not set yet';
+    const region = localStorage.getItem('userRegion') || 'Not set yet';
+
+    renderTags('pref-interests', interests);
+    renderTags('pref-vibes', vibes);
+    renderTags('pref-budget', [budget]);
+    renderTags('pref-distance', [distance]);
+    renderTags('pref-time', [time]);
+    renderTags('pref-region', [region]);
+
+    document.getElementById('back-btn').addEventListener('click', () => history.back());
+    document.getElementById('edit-btn').addEventListener('click', () => {
+      sessionStorage.setItem('onboardingEditMode', 'true');
+      window.location.href = 'onboarding2.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Saved</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: 96px; }
+
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--space-5); }
+  .page-header h1 { font-family: var(--font-heading); font-weight: 600; font-size: 22px; margin: 0 0 2px; text-align: left; }
+  .page-header p { font-size: 13px; color: var(--color-text-soft); margin: 0; }
+
+  .add-btn {
+    width: 40px; height: 40px;
+    border-radius: 14px;
+    background: var(--color-accent);
+    color: var(--color-card);
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    flex-shrink: 0;
+  }
+  .add-btn svg { width: 20px; height: 20px; }
+
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-card);
+    border-radius: var(--radius-pill);
+    padding: 10px 16px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: var(--space-4);
+  }
+  .search-row svg { width: 18px; height: 18px; color: var(--color-text-soft); flex-shrink: 0; }
+  .search-row input {
+    border: none;
+    outline: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text);
+    flex: 1;
+  }
+  .search-row input::placeholder { color: var(--color-text-soft); }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: var(--space-5);
+  }
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-heading);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--color-text);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-chip.active { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-card); }
+
+  .card-list { display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .list-card {
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .list-icon { width: 56px; height: 56px; flex-shrink: 0; }
+  .list-card-body { flex: 1; min-width: 0; }
+  .list-card-body h2 { font-family: var(--font-heading); font-weight: 600; font-size: 15.5px; margin: 0 0 4px; text-align: left; }
+  .list-card-body p { font-size: 12.5px; color: var(--color-text-soft); margin: 0 0 8px; text-align: left; line-height: 1.4; }
+  .list-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .list-tag { padding: 3px 10px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 11px; font-weight: 500; }
+
+  .unsave-btn {
+    background: none;
+    border: none;
+    color: var(--color-accent);
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 4px;
+  }
+  .unsave-btn svg { width: 20px; height: 20px; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-soft); }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: var(--space-3); }
+  .empty-state p { font-size: 14px; margin: 0; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="page-header">
+      <div>
+        <h1>Saved</h1>
+        <p>Activities you've bookmarked for later</p>
+      </div>
+      <button class="add-btn" id="add-btn" aria-label="Add place">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Search saved places..." />
+    </div>
+
+    <div class="filter-row" id="filter-row"></div>
+
+    <div class="card-list" id="card-list"></div>
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon">🔖</div>
+      <p>No saved places match that search.</p>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button type="button" class="nav-item" data-href="home-single.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v9h14v-9"/></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" class="nav-item active" data-href="saved.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
+      <span>Saved</span>
+    </button>
+    <button type="button" class="nav-item" data-href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span>Profile</span>
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const seedPlaces = [
+      { icon: '<path d="M-16,-4 h32 v18 a16,16 0 0 1 -16,16 a16,16 0 0 1 -16,-16 Z" fill="#37323e" transform="translate(50,54)"/><path d="M16,2 h8 a8,8 0 0 1 0,16 h-6" fill="none" stroke="#37323e" stroke-width="4" transform="translate(50,54)"/>',
+        title: 'Third Wave Café Crawl', desc: 'Three specialty coffee spots within 2km of each other.', tags: ['☕ Cafés', '$20–50'], category: 'Cafés' },
+      { icon: '<path d="M-18,0 L18,0 L13,18 L-13,18 Z" fill="#37323e" transform="translate(50,54)"/><path d="M-9,0 L9,0 L6,-5 L-6,-5 Z" fill="#6198ff" transform="translate(50,54)"/>',
+        title: 'Picnic at Botanic Gardens', desc: 'Shaded lawn, good for a slow half-day out.', tags: ['🧺 Picnics', 'Half Day'], category: 'Nature' },
+      { icon: '<circle cx="50" cy="54" r="26" fill="none" stroke="#37323e" stroke-width="4"/><circle cx="50" cy="54" r="10" fill="#6198ff"/>',
+        title: 'Hidden Rooftop Bar', desc: 'Low-key spot with skyline views, easy to miss.', tags: ['🕵 Hidden Gems', '$50+'], category: 'Hidden Gems' },
+      { icon: '<path d="M-20,10 L0,-4 L20,10 Z" fill="#37323e" transform="translate(50,54)"/><rect x="30" y="64" width="40" height="6" fill="#37323e"/>',
+        title: 'National Gallery — Free Fridays', desc: 'Free admission after 5pm, quieter crowds than weekends.', tags: ['🏛 Museums', 'Free'], category: 'Museums' },
+      { icon: '<ellipse cx="52" cy="64" rx="30" ry="14" fill="#fefeff"/><circle cx="36" cy="54" r="14" fill="#fefeff"/><circle cx="54" cy="46" r="17" fill="#fefeff"/><circle cx="72" cy="56" r="12" fill="#fefeff"/><circle cx="74" cy="32" r="10" fill="#6198ff"/>',
+        title: 'Sunrise at Coney Island', desc: 'A quiet boardwalk walk with café stops along the way.', tags: ['🌿 Nature', 'Under $20'], category: 'Nature' },
+      { icon: '<path d="M0,-20 C22,-16 22,14 0,22 C-22,14 -22,-16 0,-20 Z" fill="none" stroke="#37323e" stroke-width="3.5" transform="translate(50,54)"/><path d="M0,-18 L0,20" stroke="#6198ff" stroke-width="2.5" stroke-linecap="round" transform="translate(50,54)"/>',
+        title: 'East Coast Park Cycle Trail', desc: 'Flat, breezy 6km loop right along the water.', tags: ['🌿 Nature', 'Free'], category: 'Nature' },
+      { icon: '<rect x="-18" y="-4" width="36" height="20" rx="2" fill="#37323e" transform="translate(50,54)"/><path d="M-18,-4 L18,-4 L14,-16 L-22,-16 Z" fill="#37323e" transform="translate(50,54)"/><line x1="-16" y1="-10" x2="-9" y2="-16" stroke="#6198ff" stroke-width="3.5" transform="translate(50,54)"/>',
+        title: 'Indie Film Night', desc: 'Small cinema showing under-the-radar picks monthly.', tags: ['🎬 Movies', '$20–50'], category: 'Movies' },
+      { icon: '<circle cx="50" cy="50" r="14" fill="#6198ff"/><g stroke="#6198ff" stroke-width="3" stroke-linecap="round"><line x1="50" y1="30" x2="50" y2="24"/><line x1="50" y1="70" x2="50" y2="76"/><line x1="30" y1="50" x2="24" y2="50"/><line x1="70" y1="50" x2="76" y2="50"/></g>',
+        title: 'Sunset at Marina Barrage', desc: 'Open lawn, kite-flying crowd, best light an hour before sunset.', tags: ['🌅 Sunrise Spots', 'Free'], category: 'Nature' }
+    ];
+
+    let places = JSON.parse(localStorage.getItem('savedPlaces') || 'null') || seedPlaces;
+    if (!localStorage.getItem('savedPlaces')) localStorage.setItem('savedPlaces', JSON.stringify(places));
+
+    const categories = ['All', ...Array.from(new Set(places.map(p => p.category)))];
+    const filterRow = document.getElementById('filter-row');
+    filterRow.innerHTML = categories.map((c, i) => `<button class="filter-chip${i === 0 ? ' active' : ''}" data-cat="${c}">${c}</button>`).join('');
+
+    let activeCategory = 'All';
+    let searchTerm = '';
+
+    function render() {
+      const filtered = places.filter(p => {
+        const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
+        const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      const list = document.getElementById('card-list');
+      document.getElementById('empty-state').classList.toggle('hidden', filtered.length !== 0);
+
+      list.innerHTML = filtered.map((p, i) => `
+        <div class="list-card" data-index="${places.indexOf(p)}">
+          <svg class="list-icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${p.icon}</svg>
+          <div class="list-card-body">
+            <h2>${p.title}</h2>
+            <p>${p.desc}</p>
+            <div class="list-tags">${p.tags.map(t => `<span class="list-tag">${t}</span>`).join('')}</div>
+          </div>
+          <button class="unsave-btn" aria-label="Remove from saved">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
+          </button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.unsave-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('.list-card');
+          const idx = Number(card.dataset.index);
+          places = places.filter((_, i) => i !== idx);
+          localStorage.setItem('savedPlaces', JSON.stringify(places));
+          render();
+        });
+      });
+
+      list.querySelectorAll('.list-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const idx = Number(card.dataset.index);
+          const p = places[idx];
+          sessionStorage.setItem('todayPick', JSON.stringify({ icon: p.icon, title: p.title, desc: p.desc, tags: p.tags }));
+          window.location.href = 'activity-detail.html';
+        });
+      });
+    }
+
+    filterRow.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterRow.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeCategory = chip.dataset.cat;
+        render();
+      });
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchTerm = e.target.value;
+      render();
+    });
+
+    document.getElementById('add-btn').addEventListener('click', () => { window.location.href = 'add-place.html'; });
+
+    render();
+  </script>
+</body>
+</html>

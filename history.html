@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — History</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: var(--space-6); }
+
+  .detail-topbar { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .back-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .back-btn svg { width: 20px; height: 20px; color: var(--color-text); }
+  .detail-topbar h1 { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin: 0; text-align: left; }
+
+  .card-list { display: flex; flex-direction: column; gap: var(--space-4); }
+
+  .list-card {
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .list-icon { width: 52px; height: 52px; flex-shrink: 0; }
+  .list-card-body { flex: 1; min-width: 0; }
+  .list-card-body h2 { font-family: var(--font-heading); font-weight: 600; font-size: 15px; margin: 0 0 4px; text-align: left; }
+  .list-card-body .completed-date { font-size: 11.5px; color: var(--color-text-soft); margin-bottom: 6px; }
+  .list-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .list-tag { padding: 3px 10px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 11px; font-weight: 500; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-soft); }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: var(--space-3); }
+  .empty-state p { font-size: 14px; margin: 0; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="detail-topbar">
+      <button class="back-btn" id="back-btn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h1>History</h1>
+    </div>
+
+    <div class="card-list" id="history-list"></div>
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon">🗓️</div>
+      <p>Nothing here yet — activities you mark "Done" on Home will show up here.</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('back-btn').addEventListener('click', () => history.back());
+
+    const list = document.getElementById('history-list');
+    const items = JSON.parse(localStorage.getItem('activityHistory') || '[]');
+
+    if (items.length === 0) {
+      document.getElementById('empty-state').classList.remove('hidden');
+    } else {
+      list.innerHTML = items.map(item => {
+        const date = new Date(item.completedAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+        return `
+          <div class="list-card">
+            <svg class="list-icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${item.icon}</svg>
+            <div class="list-card-body">
+              <h2>${item.title}</h2>
+              <div class="completed-date">✓ Done · ${date}</div>
+              <div class="list-tags">${item.tags.map(t => `<span class="list-tag">${t}</span>`).join('')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

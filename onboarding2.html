@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — What do you enjoy?</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: var(--space-7); }
+  .section-title--spaced { margin-top: 32px; }
+  .edit-back-btn {
+    display: none;
+    width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+    margin-bottom: var(--space-4);
+  }
+  .edit-back-btn svg { width: 20px; height: 20px; color: var(--color-text); }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <button class="edit-back-btn" id="edit-back-btn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="progress-dots" id="progress-dots">
+      <span class="active"></span><span class="active"></span><span></span>
+    </div>
+
+    <h1 class="title">What do you enjoy?</h1>
+    <p class="subtitle">Choose at least 5 interests.</p>
+
+    <div class="chip-grid" id="interest-grid">
+      <button class="chip" data-kind="interest">☕ Cafés<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🍜 Food<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🍰 Desserts<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">📚 Reading<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🏛 Museums<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🎨 Art<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🌿 Nature<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🌅 Sunrise Spots<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🧺 Picnics<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🛍 Shopping<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🎬 Movies<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🎮 Gaming<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">📸 Photography<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🧶 Crafts<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🍞 Baking<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🏋 Fitness<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🧘 Yoga<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🐶 Pet Cafés<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🌃 Night Walks<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="chip" data-kind="interest">🕵 Hidden Gems<svg class="check" viewBox="0 0 20 20"><path d="M4,10 L8,14 L16,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+
+    <h2 class="section-title section-title--spaced">What's your vibe?</h2>
+    <div class="chip-grid" id="vibe-grid">
+      <button class="chip" data-kind="vibe">😌 Relaxing</button>
+      <button class="chip" data-kind="vibe">✨ Exploring</button>
+      <button class="chip" data-kind="vibe">☕ Cozy</button>
+      <button class="chip" data-kind="vibe">🌿 Peaceful</button>
+      <button class="chip" data-kind="vibe">💕 Romantic</button>
+      <button class="chip" data-kind="vibe">👯 Social</button>
+      <button class="chip" data-kind="vibe">🎨 Creative</button>
+      <button class="chip" data-kind="vibe">🏃 Active</button>
+      <button class="chip" data-kind="vibe">🌅 Scenic</button>
+      <button class="chip" data-kind="vibe">🌧 Rainy Day</button>
+      <button class="chip" data-kind="vibe">🎉 Exciting</button>
+      <button class="chip" data-kind="vibe">🎲 Surprise Me</button>
+    </div>
+
+    <div class="spacer-lg"></div>
+
+    <button class="btn btn-primary" id="continue-btn" data-href="onboarding3.html" disabled>
+      Continue
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const continueBtn = document.getElementById('continue-btn');
+    const updateReady = bindReadyState(continueBtn, () =>
+      document.querySelectorAll('.chip[data-kind="interest"].selected').length >= 5
+    );
+
+    initSelectable('#interest-grid .chip', { onChange: updateReady });
+    initSelectable('#vibe-grid .chip');
+
+    continueBtn.addEventListener('click', () => {
+      const interests = Array.from(document.querySelectorAll('#interest-grid .chip.selected')).map(c => c.textContent.trim());
+      const vibes = Array.from(document.querySelectorAll('#vibe-grid .chip.selected')).map(c => c.textContent.trim());
+      localStorage.setItem('userInterests', JSON.stringify(interests));
+      localStorage.setItem('userVibes', JSON.stringify(vibes));
+    });
+
+    if (sessionStorage.getItem('onboardingEditMode') === 'true') {
+      document.getElementById('progress-dots').style.display = 'none';
+      const editBackBtn = document.getElementById('edit-back-btn');
+      editBackBtn.style.display = 'flex';
+      editBackBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('onboardingEditMode');
+        window.location.href = 'profile.html';
+      });
+    }
+  </script>
+</body>
+</html>

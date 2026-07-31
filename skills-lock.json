@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "skills": {
+    "animation-vocabulary": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/animation-vocabulary/SKILL.md",
+      "computedHash": "39319fc9a33c15be08666b3685f58666f042ff36bb902b7814c0834a5ba99df4"
+    },
+    "apple-design": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "8b94db67cb9edaad5f1501010804caa610131f1d2dfda0a27664b2e858deade3"
+    },
+    "claude-typer": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "claude-typer/SKILL.md",
+      "computedHash": "7e894ff3a75756fb2f45f7189c646dd199548e934edd94eb1b93865bbe3caa2e"
+    },
+    "deploy-to-vercel": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/deploy-to-vercel/SKILL.md",
+      "computedHash": "03e0eaaa9bf13ba1e7ffa387f5893de6f324c0868c627001f179395a8feaa7c9"
+    },
+    "disney-animation-rule-skill": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "disney-animation-rule-skill/SKILL.md",
+      "computedHash": "963e97ed3e23705c3249acd9a124a1ee1a4fb7a7684c0a1bc0b1994517f2e3a2"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "41b0a4dc1a27164fe297845a6c6850a39e9242c42c9be999967fcee9df2c5974"
+    },
+    "find-animation-opportunities": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-animation-opportunities/SKILL.md",
+      "computedHash": "8fb8492eb8fbed1313cb430b5831d925d9b8964ca24f3c41a6244cbd1fd98732"
+    },
+    "improve-animations": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/improve-animations/SKILL.md",
+      "computedHash": "eeb219a407e325b687af88db25771cc3018e3148245604112f5ac6990b6fd79c"
+    },
+    "light-spotlight-render": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "light-spotlight-render/SKILL.md",
+      "computedHash": "f745f10c2bd5aa3b5a84f749f2be314a483d8804a8172799ace7f9f40010fd07"
+    },
+    "pick-ui-library": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pick-ui-library/SKILL.md",
+      "computedHash": "f8d4d2cf4677bf54b14f35f62a741add93541bfcb67863315a40164365161b49"
+    },
+    "procedural-fish-render": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "procedural-fish-render/SKILL.md",
+      "computedHash": "0ce8ef81487396a32d657dd844391753e5497605183d52d5af06f84791672052"
+    },
+    "remotion-3d-ticker": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "remotion-3d-ticker/SKILL.md",
+      "computedHash": "03c94b361541fb6f478ab906cfb06e3c7b8c2e834a0ecb0a9bdad6cae9a16558"
+    },
+    "review-animations": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/review-animations/SKILL.md",
+      "computedHash": "b9f669af5ae280c19a592a94611520335a81de25c88f225bf60ae4b2d66c8c7c"
+    },
+    "ruler-progress-render": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "ruler-progress-render/SKILL.md",
+      "computedHash": "76fbf3c53caabd2308254b70bfb3ea967f230317b6430c628f2d9d78832dc976"
+    },
+    "svg-assembly-animator": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "svg-assembly-animator/SKILL.md",
+      "computedHash": "df107141126a2823cd898910cdfe43516c22b257031ebd05b37157e367498a80"
+    },
+    "threejs-earth-render": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "threejs-earth-render/SKILL.md",
+      "computedHash": "f076abe98936f374cdbf01c39e2fe033db24c8ebaad68390b1d2cd2a90d1938a"
+    },
+    "vercel-cli-with-tokens": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-cli-with-tokens/SKILL.md",
+      "computedHash": "eb16b20dcbe6ce51e0372083d624e0847af1b09487ec99249227d5a8eddebfc0"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
+    },
+    "vercel-optimize": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-optimize/SKILL.md",
+      "computedHash": "ad0ef9c5c980f824e2ec19cba5c45426aba923a17e71fbaf6d1830574b62cc44"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
+    },
+    "vercel-react-native-skills": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-native-skills/SKILL.md",
+      "computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06"
+    },
+    "vercel-react-view-transitions": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-view-transitions/SKILL.md",
+      "computedHash": "c8952fc9127fa0564d0cb71dccb4215a5608ac933b5831104f09173a97a46f85"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "wechat-2d-render": {
+      "source": "vibe-motion/skills",
+      "sourceType": "github",
+      "skillPath": "wechat-2d-render/SKILL.md",
+      "computedHash": "0e99ed5883c45f08090f3a5b919ee6e236078899449f79404976b07c765b1a93"
+    },
+    "writing-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/writing-guidelines/SKILL.md",
+      "computedHash": "25aa3a33a97bddbcb1847ce4a6169106ec25e5b19b15b99c66e75ab383866ef2"
+    }
+  }
+}

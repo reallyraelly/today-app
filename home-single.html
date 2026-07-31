@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Home</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: 96px; }
+
+  .greeting { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); }
+  .greeting-text h1 { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin: 0 0 2px; text-align: left; }
+  .greeting-text p { font-size: 13px; color: var(--color-text-soft); margin: 0; }
+  .avatar { width: 40px; height: 40px; border-radius: 14px; }
+
+  /* ---- Today widget: date + time + weather combined -------------------- */
+  .today-widget {
+    display: flex;
+    align-items: center;
+    background: var(--color-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 14px 18px;
+    margin-bottom: var(--space-5);
+    gap: 16px;
+  }
+  .tw-weather { display: flex; align-items: center; gap: 10px; }
+  .tw-weather-icon { font-size: 30px; line-height: 1; }
+  .tw-temp { font-family: var(--font-heading); font-size: 17px; font-weight: 600; color: var(--color-text); }
+  .tw-condition { font-size: 11.5px; color: var(--color-text-soft); }
+  .tw-divider { width: 1px; align-self: stretch; background: var(--color-border); }
+  .tw-datetime { flex: 1; }
+  .tw-date { font-family: var(--font-heading); font-size: 13.5px; font-weight: 600; color: var(--color-text); }
+  .tw-time { font-size: 11.5px; color: var(--color-text-soft); }
+
+  .quote-line {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--color-text-soft);
+    margin: 0 0 var(--space-6);
+  }
+
+  .pick-label { font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-soft); margin-bottom: var(--space-3); text-align: center; }
+
+  .pick-card {
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6) var(--space-5);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    margin-bottom: var(--space-5);
+  }
+
+  .pick-icon-wrap { width: 100px; height: 100px; margin: 0 auto var(--space-4); }
+  .pick-icon-wrap svg { width: 100%; height: 100%; }
+
+  .pick-card h2 { font-family: var(--font-heading); font-weight: 600; font-size: 22px; margin: 0 0 8px; min-height: 28px; }
+  .pick-card p.desc { font-size: 14px; color: var(--color-text-soft); margin: 0 0 var(--space-4); line-height: 1.5; min-height: 20px; }
+
+  .pick-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: var(--space-5); min-height: 28px; }
+  .pick-tag { padding: 6px 14px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 12.5px; font-weight: 500; }
+
+  .pick-actions { display: flex; gap: var(--space-3); }
+  .btn-outline { flex: 1; background: transparent; border: 1.5px solid var(--color-accent); color: var(--color-accent); }
+  .btn-primary.flex1 { flex: 1; }
+
+  /* pre-reveal state: hide result content, center the spin button */
+  .pick-card .result-content,
+  .pick-card .pick-actions.result-actions { display: none; }
+  .pick-card.revealed .result-content,
+  .pick-card.revealed .pick-actions.result-actions { display: block; }
+  .pick-card.revealed .pick-actions.result-actions { display: flex; }
+  .pick-card.revealed .spin-cta { display: none; }
+
+  .spin-cta {
+    height: 52px;
+    padding: 0 40px;
+    border-radius: var(--radius-pill);
+    border: none;
+    background: var(--color-accent);
+    color: var(--color-card);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: transform 150ms var(--ease-standard), opacity 200ms var(--ease-standard);
+  }
+  .spin-cta:active { transform: scale(0.97); }
+  .spin-cta:disabled { opacity: 0.6; cursor: default; }
+
+  .pick-icon-wrap.shuffling svg { animation: shuffle-pulse 120ms ease-in-out infinite; }
+  @keyframes shuffle-pulse { 50% { transform: scale(1.06); } }
+
+  /* ---- Ongoing activity card ------------------------------------------- */
+  .ongoing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-family: var(--font-heading);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    margin-bottom: var(--space-3);
+  }
+  .ongoing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); animation: ongoing-pulse 1400ms ease-in-out infinite; }
+  @keyframes ongoing-pulse { 50% { opacity: 0.3; } }
+  .ongoing-title { margin-bottom: 20px; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="greeting">
+      <div class="greeting-text">
+        <h1 id="greeting-text">Good afternoon 👋</h1>
+        <p id="quote-inline"></p>
+      </div>
+      <img class="avatar" src="assets/logo.png" alt="" />
+    </div>
+
+    <div class="today-widget">
+      <div class="tw-weather">
+        <span class="tw-weather-icon">☀️</span>
+        <div>
+          <div class="tw-temp">28°C</div>
+          <div class="tw-condition">Sunny</div>
+        </div>
+      </div>
+      <div class="tw-divider"></div>
+      <div class="tw-datetime">
+        <div class="tw-date" id="dash-date">—</div>
+        <div class="tw-time" id="dash-time">—</div>
+      </div>
+    </div>
+
+    <p class="pick-label" id="pick-label">Ready when you are</p>
+
+    <div class="pick-card" id="pick-card">
+      <div class="pick-icon-wrap" id="pick-icon-wrap">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/><circle cx="50" cy="50" r="14" fill="none" stroke="#6198ff" stroke-width="4"/></svg>
+      </div>
+
+      <div class="result-content">
+        <h2 id="pick-title"></h2>
+        <p class="desc" id="pick-desc"></p>
+        <div class="pick-tags" id="pick-tags"></div>
+      </div>
+
+      <button class="spin-cta" id="spin-btn">Spin 🎲</button>
+
+      <div class="pick-actions result-actions">
+        <button class="btn btn-outline" id="spin-again-btn">Spin Again</button>
+        <button class="btn btn-primary flex1" id="lets-go-btn">Let's Go</button>
+      </div>
+    </div>
+
+    <div class="pick-card hidden" id="ongoing-card">
+      <span class="ongoing-badge"><span class="ongoing-dot"></span> In Progress</span>
+      <div class="pick-icon-wrap" id="ongoing-icon-wrap"></div>
+      <h2 class="ongoing-title" id="ongoing-title"></h2>
+      <div class="pick-actions">
+        <button class="btn btn-outline" id="cancel-ongoing-btn">Cancel</button>
+        <button class="btn btn-primary flex1" id="done-ongoing-btn">Done ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button type="button" class="nav-item active" data-href="home-single.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v9h14v-9"/></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" class="nav-item" data-href="saved.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
+      <span>Saved</span>
+    </button>
+    <button type="button" class="nav-item" data-href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span>Profile</span>
+    </button>
+  </div>
+
+  <script>
+    // ---- Dashboard: live date/time, mock weather (needs a real API later) ----
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('dash-date').textContent = now.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+      document.getElementById('dash-time').textContent = now.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // ---- Greeting + quote ----
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting-text').textContent = `${greeting} 👋`;
+
+    const quotes = [
+      'Small moments make big days.',
+      "Today's a good day to wander.",
+      'Adventure fits in an afternoon.',
+      "Slow down, something good's nearby.",
+      'Go find your good part of today.'
+    ];
+    document.getElementById('quote-inline').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // ---- Sample picks (placeholder data) ----
+    const picks = [
+      {
+        icon: '<ellipse cx="52" cy="64" rx="30" ry="14" fill="#fefeff"/><circle cx="36" cy="54" r="14" fill="#fefeff"/><circle cx="54" cy="46" r="17" fill="#fefeff"/><circle cx="72" cy="56" r="12" fill="#fefeff"/><circle cx="74" cy="32" r="10" fill="#6198ff"/>',
+        title: 'Sunrise at Coney Island',
+        desc: 'A quiet boardwalk walk with café stops along the way.',
+        tags: ['🌿 Nature', '☕ Cafés', 'Under $20', 'Northeast']
+      },
+      {
+        icon: '<path d="M-16,-4 h32 v18 a16,16 0 0 1 -16,16 a16,16 0 0 1 -16,-16 Z" fill="#37323e" transform="translate(50,54)"/><path d="M16,2 h8 a8,8 0 0 1 0,16 h-6" fill="none" stroke="#37323e" stroke-width="4" transform="translate(50,54)"/>',
+        title: 'Third Wave Café Crawl',
+        desc: 'Three specialty coffee spots within 2km of each other.',
+        tags: ['☕ Cafés', '$20–50']
+      },
+      {
+        icon: '<path d="M-20,10 L0,-4 L20,10 Z" fill="#37323e" transform="translate(50,54)"/><rect x="30" y="64" width="40" height="6" fill="#37323e"/>',
+        title: 'National Gallery — Free Fridays',
+        desc: 'Free admission after 5pm, quieter crowds than weekends.',
+        tags: ['🏛 Museums', 'Free']
+      },
+      {
+        icon: '<path d="M-18,0 L18,0 L13,18 L-13,18 Z" fill="#37323e" transform="translate(50,54)"/><path d="M-9,0 L9,0 L6,-5 L-6,-5 Z" fill="#6198ff" transform="translate(50,54)"/>',
+        title: 'Picnic at Botanic Gardens',
+        desc: 'Shaded lawn, good for a slow half-day out.',
+        tags: ['🧺 Picnics', 'Half Day']
+      },
+      {
+        icon: '<circle cx="50" cy="54" r="26" fill="none" stroke="#37323e" stroke-width="4"/><circle cx="50" cy="54" r="10" fill="#6198ff"/>',
+        title: 'Hidden Rooftop Bar',
+        desc: 'Low-key spot with skyline views, easy to miss.',
+        tags: ['🕵 Hidden Gems', '$50+']
+      }
+    ];
+
+    const iconWrap = document.getElementById('pick-icon-wrap');
+    const card = document.getElementById('pick-card');
+    const spinBtn = document.getElementById('spin-btn');
+    const spinAgainBtn = document.getElementById('spin-again-btn');
+    const pickLabel = document.getElementById('pick-label');
+
+    function setIcon(pick) {
+      iconWrap.innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${pick.icon}</svg>`;
+    }
+
+    // Weight picks toward the user's saved interests (from onboarding), so
+    // Spin favors matching tags instead of being purely random.
+    function pickPersonalized() {
+      const savedInterests = JSON.parse(localStorage.getItem('userInterests') || 'null');
+      if (!savedInterests || savedInterests.length === 0) {
+        return picks[Math.floor(Math.random() * picks.length)];
+      }
+      const weighted = [];
+      picks.forEach(pick => {
+        const overlap = pick.tags.filter(t => savedInterests.includes(t)).length;
+        const weight = 1 + overlap * 2;
+        for (let w = 0; w < weight; w++) weighted.push(pick);
+      });
+      return weighted[Math.floor(Math.random() * weighted.length)];
+    }
+
+    function runSpin() {
+      spinBtn.disabled = true;
+      spinAgainBtn.disabled = true;
+      pickLabel.textContent = 'Spinning...';
+      iconWrap.classList.add('shuffling');
+
+      const finalPick = pickPersonalized();
+      const delays = [80, 80, 90, 100, 120, 150, 190, 240, 300, 380];
+      let i = 0;
+
+      function tick() {
+        setIcon(picks[Math.floor(Math.random() * picks.length)]);
+        i++;
+        if (i < delays.length) {
+          setTimeout(tick, delays[i]);
+        } else {
+          finishSpin(finalPick);
+        }
+      }
+      tick();
+    }
+
+    function finishSpin(pick) {
+      currentPick = pick;
+      iconWrap.classList.remove('shuffling');
+      setIcon(pick);
+      document.getElementById('pick-title').textContent = pick.title;
+      document.getElementById('pick-desc').textContent = pick.desc;
+      document.getElementById('pick-tags').innerHTML = pick.tags.map(t => `<span class="pick-tag">${t}</span>`).join('');
+      pickLabel.textContent = "Today's Pick";
+      card.classList.add('revealed');
+      spinBtn.disabled = false;
+      spinAgainBtn.disabled = false;
+    }
+
+    let currentPick = null;
+
+    spinBtn.addEventListener('click', runSpin);
+    spinAgainBtn.addEventListener('click', () => {
+      card.classList.remove('revealed');
+      runSpin();
+    });
+
+    document.getElementById('lets-go-btn').addEventListener('click', () => {
+      if (currentPick) sessionStorage.setItem('todayPick', JSON.stringify(currentPick));
+      window.location.href = 'activity-detail.html';
+    });
+
+    document.querySelectorAll('.nav-item[data-href]').forEach(el => {
+      el.addEventListener('click', () => { window.location.href = el.dataset.href; });
+    });
+
+    // ---- Ongoing activity state (persists across reloads via localStorage) ----
+    function showOngoing(activity) {
+      pickLabel.classList.add('hidden');
+      card.classList.add('hidden');
+      document.getElementById('ongoing-card').classList.remove('hidden');
+      document.getElementById('ongoing-icon-wrap').innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${activity.icon}</svg>`;
+      document.getElementById('ongoing-title').textContent = activity.title;
+    }
+
+    function clearOngoing() {
+      localStorage.removeItem('ongoingActivity');
+      document.getElementById('ongoing-card').classList.add('hidden');
+      pickLabel.classList.remove('hidden');
+      card.classList.remove('hidden');
+    }
+
+    const ongoingRaw = localStorage.getItem('ongoingActivity');
+    if (ongoingRaw) showOngoing(JSON.parse(ongoingRaw));
+
+    document.getElementById('cancel-ongoing-btn').addEventListener('click', clearOngoing);
+    document.getElementById('done-ongoing-btn').addEventListener('click', () => {
+      const activity = JSON.parse(localStorage.getItem('ongoingActivity'));
+      const history = JSON.parse(localStorage.getItem('activityHistory') || '[]');
+      history.unshift({ ...activity, completedAt: new Date().toISOString() });
+      localStorage.setItem('activityHistory', JSON.stringify(history));
+      clearOngoing();
+    });
+  </script>
+</body>
+</html>

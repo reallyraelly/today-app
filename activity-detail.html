@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today — Activity</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { padding-bottom: var(--space-6); }
+
+  .detail-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); }
+  .back-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+  }
+  .back-btn svg { width: 20px; height: 20px; color: var(--color-text); }
+
+  .save-toggle {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-soft);
+  }
+  .save-toggle.saved { color: var(--color-accent); }
+  .save-toggle svg { width: 20px; height: 20px; }
+
+  .detail-hero { width: 160px; height: 160px; margin: 0 auto var(--space-5); }
+  .detail-hero svg { width: 100%; height: 100%; }
+
+  .detail-title { font-family: var(--font-heading); font-weight: 600; font-size: 24px; text-align: center; margin: 0 0 var(--space-3); }
+
+  .detail-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: var(--space-5); }
+  .detail-tag { padding: 6px 14px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-heading); font-size: 12.5px; font-weight: 500; }
+
+  .detail-desc { font-size: 14.5px; line-height: 1.6; color: var(--color-text); text-align: center; margin: 0 0 var(--space-5); }
+
+  .why-card {
+    background: var(--color-accent-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .why-card .why-icon { font-size: 18px; flex-shrink: 0; }
+  .why-card p { margin: 0; font-size: 13px; color: var(--color-accent); line-height: 1.5; text-align: left; }
+  .why-card strong { font-weight: 600; }
+
+  .detail-actions { display: flex; gap: var(--space-3); }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="detail-topbar">
+      <button class="back-btn" id="back-btn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="save-toggle" id="save-toggle" aria-label="Save">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
+      </button>
+    </div>
+
+    <div class="detail-hero" id="detail-hero"></div>
+
+    <h1 class="detail-title" id="detail-title"></h1>
+
+    <div class="detail-tags" id="detail-tags"></div>
+
+    <p class="detail-desc" id="detail-desc"></p>
+
+    <div class="why-card">
+      <span class="why-icon">✨</span>
+      <p id="why-text"></p>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn btn-outline flex1" id="directions-btn">Get Directions</button>
+      <button class="btn btn-primary flex1" id="lets-do-this-btn">Let's Do This</button>
+    </div>
+  </div>
+
+  <script>
+    const fallback = {
+      icon: '<ellipse cx="52" cy="64" rx="30" ry="14" fill="#fefeff"/><circle cx="36" cy="54" r="14" fill="#fefeff"/><circle cx="54" cy="46" r="17" fill="#fefeff"/><circle cx="72" cy="56" r="12" fill="#fefeff"/><circle cx="74" cy="32" r="10" fill="#6198ff"/>',
+      title: 'Sunrise at Coney Island',
+      desc: 'A quiet boardwalk walk with café stops along the way — matches your love of nature and cafés. Great for an easy morning out before the day gets busy.',
+      tags: ['🌿 Nature', '☕ Cafés', 'Under $20', 'Northeast']
+    };
+
+    const stored = sessionStorage.getItem('todayPick');
+    const pick = stored ? JSON.parse(stored) : fallback;
+
+    document.getElementById('detail-hero').innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${pick.icon}</svg>`;
+    document.getElementById('detail-title').textContent = pick.title;
+    document.getElementById('detail-desc').textContent = pick.desc;
+    document.getElementById('detail-tags').innerHTML = pick.tags.map(t => `<span class="detail-tag">${t}</span>`).join('');
+
+    const topTag = pick.tags.find(t => /[a-zA-Z]/.test(t)) || pick.tags[0];
+    document.getElementById('why-text').innerHTML = `Matched to your interests — you told us you're into <strong>${topTag.replace(/^[^\w]+/, '')}</strong>, and this fits your usual budget and time preferences too.`;
+
+    document.getElementById('back-btn').addEventListener('click', () => history.back());
+    document.getElementById('directions-btn').addEventListener('click', () => { window.location.href = 'directions.html'; });
+
+    const saveToggle = document.getElementById('save-toggle');
+    saveToggle.addEventListener('click', () => saveToggle.classList.toggle('saved'));
+
+    document.getElementById('lets-do-this-btn').addEventListener('click', () => {
+      localStorage.setItem('ongoingActivity', JSON.stringify(pick));
+      window.location.href = 'home-single.html';
+    });
+  </script>
+</body>
+</html>
