@@ -185,6 +185,8 @@
         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/><circle cx="50" cy="50" r="14" fill="none" stroke="#6198ff" stroke-width="4"/></svg>
       </div>
 
+      <h2 class="hidden" id="shuffle-title"></h2>
+
       <div class="result-content">
         <h2 id="pick-title"></h2>
         <p class="desc" id="pick-desc"></p>
@@ -257,6 +259,7 @@
     const spinBtn = document.getElementById('spin-btn');
     const spinAgainBtn = document.getElementById('spin-again-btn');
     const pickLabel = document.getElementById('pick-label');
+    const shuffleTitle = document.getElementById('shuffle-title');
     let currentPick = null;
 
     // ---- Mood-check: mood/subcategory selection, sticky per session ----
@@ -383,13 +386,16 @@
       spinAgainBtn.disabled = true;
       pickLabel.textContent = 'Spinning...';
       iconWrap.classList.add('shuffling');
+      shuffleTitle.classList.remove('hidden');
 
       const finalPick = toPick(pickRandomItem(pool));
       const delays = [80, 80, 90, 100, 120, 150, 190, 240, 300, 380];
       let i = 0;
 
       function tick() {
-        setIcon(toPick(pickRandomItem(pool)));
+        const shuffled = toPick(pickRandomItem(pool));
+        setIcon(shuffled);
+        shuffleTitle.textContent = shuffled.title;
         i++;
         if (i < delays.length) {
           setTimeout(tick, delays[i]);
@@ -403,6 +409,7 @@
     function finishSpin(pick) {
       currentPick = pick;
       iconWrap.classList.remove('shuffling');
+      shuffleTitle.classList.add('hidden');
       setIcon(pick);
       document.getElementById('pick-title').textContent = pick.title;
       document.getElementById('pick-desc').textContent = pick.desc;
