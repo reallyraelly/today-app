@@ -111,6 +111,35 @@
   .ongoing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); animation: ongoing-pulse 1400ms ease-in-out infinite; }
   @keyframes ongoing-pulse { 50% { opacity: 0.3; } }
   .ongoing-title { margin-bottom: 20px; }
+
+  .mood-picker { margin-bottom: var(--space-5); }
+  .mood-picker .pick-label { margin-bottom: var(--space-3); }
+  #mood-step2 { margin-top: var(--space-3); }
+
+  .mood-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--color-text-soft);
+    margin-bottom: var(--space-3);
+  }
+  .mood-change-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-accent);
+    font-family: var(--font-heading);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  /* .mood-pill sets display:flex at the same specificity as the shared
+     .hidden utility class; since this inline block loads after style.css,
+     it would win the cascade tie and keep the pill visible. This
+     two-class selector raises specificity so .hidden reliably wins. */
+  .mood-pill.hidden { display: none; }
 </style>
 </head>
 <body>
@@ -138,9 +167,20 @@
       </div>
     </div>
 
+    <div class="mood-picker hidden" id="mood-picker">
+      <p class="pick-label">What are you feeling today?</p>
+      <div class="chip-grid" id="mood-step1"></div>
+      <div class="chip-grid hidden" id="mood-step2"></div>
+    </div>
+
+    <div class="mood-pill hidden" id="mood-pill">
+      <span id="mood-pill-text"></span>
+      <button type="button" class="mood-change-btn" id="mood-change-btn">change</button>
+    </div>
+
     <p class="pick-label" id="pick-label">Ready when you are</p>
 
-    <div class="pick-card" id="pick-card">
+    <div class="pick-card hidden" id="pick-card">
       <div class="pick-icon-wrap" id="pick-icon-wrap">
         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/><circle cx="50" cy="50" r="14" fill="none" stroke="#6198ff" stroke-width="4"/></svg>
       </div>
@@ -185,6 +225,9 @@
     </button>
   </div>
 
+  <script src="taxonomy.js"></script>
+  <script src="mood-check.js"></script>
+  <script src="mood-session.js"></script>
   <script>
     // ---- Dashboard: live date/time, mock weather (needs a real API later) ----
     function updateClock() {
@@ -248,6 +291,79 @@
     const spinBtn = document.getElementById('spin-btn');
     const spinAgainBtn = document.getElementById('spin-again-btn');
     const pickLabel = document.getElementById('pick-label');
+
+    // ---- Mood-check: mood/subcategory selection, sticky per session ----
+    const moodPicker = document.getElementById('mood-picker');
+    const moodStep1 = document.getElementById('mood-step1');
+    const moodStep2 = document.getElementById('mood-step2');
+    const moodPill = document.getElementById('mood-pill');
+    const moodPillText = document.getElementById('mood-pill-text');
+
+    function renderStep1() {
+      moodStep1.innerHTML = TAXONOMY.map(category =>
+        `<button type="button" class="chip" data-category-id="${category.id}">${category.emoji} ${category.label}</button>`
+      ).join('') + `<button type="button" class="chip" data-category-id="${SURPRISE_ID}">🎲 Surprise Me</button>`;
+
+      moodStep1.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const categoryId = btn.dataset.categoryId;
+          if (categoryId === SURPRISE_ID) {
+            confirmMood(SURPRISE_ID, null);
+          } else {
+            renderStep2(categoryId);
+          }
+        });
+      });
+    }
+
+    function renderStep2(categoryId) {
+      const category = TAXONOMY.find(c => c.id === categoryId);
+      moodStep2.innerHTML = category.subcategories.map(sub =>
+        `<button type="button" class="chip" data-subcategory-id="${sub.id}">${sub.label}</button>`
+      ).join('');
+      moodStep2.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => confirmMood(categoryId, btn.dataset.subcategoryId));
+      });
+      moodStep1.classList.add('hidden');
+      moodStep2.classList.remove('hidden');
+    }
+
+    function confirmMood(categoryId, subcategoryId) {
+      setSessionMood(categoryId, subcategoryId);
+      showMoodPill();
+      moodPicker.classList.add('hidden');
+      card.classList.remove('hidden');
+    }
+
+    function showMoodPill() {
+      const categoryId = getSessionMood();
+      const subcategoryId = getSessionSubcategory();
+      const category = TAXONOMY.find(c => c.id === categoryId);
+      const label = categoryId === SURPRISE_ID
+        ? '🎲 Surprise Me'
+        : `${category.emoji} ${category.label} → ${category.subcategories.find(s => s.id === subcategoryId).label}`;
+      moodPillText.textContent = label;
+      moodPill.classList.remove('hidden');
+    }
+
+    document.getElementById('mood-change-btn').addEventListener('click', () => {
+      clearSessionMood();
+      card.classList.add('hidden');
+      card.classList.remove('revealed');
+      moodPill.classList.add('hidden');
+      moodStep2.classList.add('hidden');
+      moodStep1.classList.remove('hidden');
+      moodPicker.classList.remove('hidden');
+      currentPick = null;
+    });
+
+    renderStep1();
+    if (getSessionMood()) {
+      showMoodPill();
+      card.classList.remove('hidden');
+    } else {
+      moodPicker.classList.remove('hidden');
+    }
 
     function setIcon(pick) {
       iconWrap.innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${pick.icon}</svg>`;
