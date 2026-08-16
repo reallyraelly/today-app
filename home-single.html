@@ -111,6 +111,35 @@
   .ongoing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); animation: ongoing-pulse 1400ms ease-in-out infinite; }
   @keyframes ongoing-pulse { 50% { opacity: 0.3; } }
   .ongoing-title { margin-bottom: 20px; }
+
+  .mood-picker { margin-bottom: var(--space-5); }
+  .mood-picker .pick-label { margin-bottom: var(--space-3); }
+  #mood-step2 { margin-top: var(--space-3); }
+
+  .mood-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--color-text-soft);
+    margin-bottom: var(--space-3);
+  }
+  .mood-change-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-accent);
+    font-family: var(--font-heading);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  /* .mood-pill sets display:flex at the same specificity as the shared
+     .hidden utility class; since this inline block loads after style.css,
+     it would win the cascade tie and keep the pill visible. This
+     two-class selector raises specificity so .hidden reliably wins. */
+  .mood-pill.hidden { display: none; }
 </style>
 </head>
 <body>
@@ -138,12 +167,25 @@
       </div>
     </div>
 
+    <div class="mood-picker hidden" id="mood-picker">
+      <p class="pick-label">What are you feeling today?</p>
+      <div class="chip-grid" id="mood-step1"></div>
+      <div class="chip-grid hidden" id="mood-step2"></div>
+    </div>
+
+    <div class="mood-pill hidden" id="mood-pill">
+      <span id="mood-pill-text"></span>
+      <button type="button" class="mood-change-btn" id="mood-change-btn">change</button>
+    </div>
+
     <p class="pick-label" id="pick-label">Ready when you are</p>
 
-    <div class="pick-card" id="pick-card">
+    <div class="pick-card hidden" id="pick-card">
       <div class="pick-icon-wrap" id="pick-icon-wrap">
         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/><circle cx="50" cy="50" r="14" fill="none" stroke="#6198ff" stroke-width="4"/></svg>
       </div>
+
+      <h2 class="hidden" id="shuffle-title"></h2>
 
       <div class="result-content">
         <h2 id="pick-title"></h2>
@@ -185,6 +227,9 @@
     </button>
   </div>
 
+  <script src="taxonomy.js"></script>
+  <script src="mood-check.js"></script>
+  <script src="mood-session.js"></script>
   <script>
     // ---- Dashboard: live date/time, mock weather (needs a real API later) ----
     function updateClock() {
@@ -209,78 +254,148 @@
     ];
     document.getElementById('quote-inline').textContent = quotes[Math.floor(Math.random() * quotes.length)];
 
-    // ---- Sample picks (placeholder data) ----
-    const picks = [
-      {
-        icon: '<ellipse cx="52" cy="64" rx="30" ry="14" fill="#fefeff"/><circle cx="36" cy="54" r="14" fill="#fefeff"/><circle cx="54" cy="46" r="17" fill="#fefeff"/><circle cx="72" cy="56" r="12" fill="#fefeff"/><circle cx="74" cy="32" r="10" fill="#6198ff"/>',
-        title: 'Sunrise at Coney Island',
-        desc: 'A quiet boardwalk walk with café stops along the way.',
-        tags: ['🌿 Nature', '☕ Cafés', 'Under $20', 'Northeast']
-      },
-      {
-        icon: '<path d="M-16,-4 h32 v18 a16,16 0 0 1 -16,16 a16,16 0 0 1 -16,-16 Z" fill="#37323e" transform="translate(50,54)"/><path d="M16,2 h8 a8,8 0 0 1 0,16 h-6" fill="none" stroke="#37323e" stroke-width="4" transform="translate(50,54)"/>',
-        title: 'Third Wave Café Crawl',
-        desc: 'Three specialty coffee spots within 2km of each other.',
-        tags: ['☕ Cafés', '$20–50']
-      },
-      {
-        icon: '<path d="M-20,10 L0,-4 L20,10 Z" fill="#37323e" transform="translate(50,54)"/><rect x="30" y="64" width="40" height="6" fill="#37323e"/>',
-        title: 'National Gallery — Free Fridays',
-        desc: 'Free admission after 5pm, quieter crowds than weekends.',
-        tags: ['🏛 Museums', 'Free']
-      },
-      {
-        icon: '<path d="M-18,0 L18,0 L13,18 L-13,18 Z" fill="#37323e" transform="translate(50,54)"/><path d="M-9,0 L9,0 L6,-5 L-6,-5 Z" fill="#6198ff" transform="translate(50,54)"/>',
-        title: 'Picnic at Botanic Gardens',
-        desc: 'Shaded lawn, good for a slow half-day out.',
-        tags: ['🧺 Picnics', 'Half Day']
-      },
-      {
-        icon: '<circle cx="50" cy="54" r="26" fill="none" stroke="#37323e" stroke-width="4"/><circle cx="50" cy="54" r="10" fill="#6198ff"/>',
-        title: 'Hidden Rooftop Bar',
-        desc: 'Low-key spot with skyline views, easy to miss.',
-        tags: ['🕵 Hidden Gems', '$50+']
-      }
-    ];
-
     const iconWrap = document.getElementById('pick-icon-wrap');
     const card = document.getElementById('pick-card');
     const spinBtn = document.getElementById('spin-btn');
     const spinAgainBtn = document.getElementById('spin-again-btn');
     const pickLabel = document.getElementById('pick-label');
+    const shuffleTitle = document.getElementById('shuffle-title');
+    let currentPick = null;
+
+    // ---- Mood-check: mood/subcategory selection, sticky per session ----
+    const moodPicker = document.getElementById('mood-picker');
+    const moodStep1 = document.getElementById('mood-step1');
+    const moodStep2 = document.getElementById('mood-step2');
+    const moodPill = document.getElementById('mood-pill');
+    const moodPillText = document.getElementById('mood-pill-text');
+
+    function renderStep1() {
+      moodStep1.innerHTML = TAXONOMY.map(category =>
+        `<button type="button" class="chip" data-category-id="${category.id}">${category.emoji} ${category.label}</button>`
+      ).join('') + `<button type="button" class="chip" data-category-id="${SURPRISE_ID}">🎲 Surprise Me</button>`;
+
+      moodStep1.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const categoryId = btn.dataset.categoryId;
+          if (categoryId === SURPRISE_ID) {
+            confirmMood(SURPRISE_ID, null);
+          } else {
+            renderStep2(categoryId);
+          }
+        });
+      });
+    }
+
+    function renderStep2(categoryId) {
+      const category = TAXONOMY.find(c => c.id === categoryId);
+      moodStep2.innerHTML = category.subcategories.map(sub =>
+        `<button type="button" class="chip" data-subcategory-id="${sub.id}">${sub.label}</button>`
+      ).join('');
+      moodStep2.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => confirmMood(categoryId, btn.dataset.subcategoryId));
+      });
+      moodStep1.classList.add('hidden');
+      moodStep2.classList.remove('hidden');
+    }
+
+    function confirmMood(categoryId, subcategoryId) {
+      setSessionMood(categoryId, subcategoryId);
+      showMoodCheckOrPickCard();
+    }
+
+    // Returns true if the pill was rendered from valid session state, false if
+    // the session mood/subcategory didn't resolve against TAXONOMY (and has
+    // been cleared as a result) — callers must fall back to the mood-picker.
+    function showMoodPill() {
+      const categoryId = getSessionMood();
+      const subcategoryId = getSessionSubcategory();
+
+      if (categoryId === SURPRISE_ID) {
+        moodPillText.textContent = '🎲 Surprise Me';
+        moodPill.classList.remove('hidden');
+        return true;
+      }
+
+      const category = TAXONOMY.find(c => c.id === categoryId);
+      const subcategory = category && category.subcategories.find(s => s.id === subcategoryId);
+      if (!category || !subcategory) {
+        // Stale/unknown session mood (e.g. taxonomy content changed underneath
+        // an existing session) — treat it the same as "no mood set" rather
+        // than throwing and killing the rest of this script.
+        clearSessionMood();
+        return false;
+      }
+
+      moodPillText.textContent = `${category.emoji} ${category.label} → ${subcategory.label}`;
+      moodPill.classList.remove('hidden');
+      return true;
+    }
+
+    // Shared branch logic for "what should be visible below the today-widget":
+    // either the mood-picker (no mood set this session) or the pill + pick-card
+    // (mood already set). Used on initial load and whenever the ongoing-activity
+    // card is dismissed, so the two flows never fall out of sync.
+    function showMoodCheckOrPickCard() {
+      if (getSessionMood() && showMoodPill()) {
+        moodPicker.classList.add('hidden');
+        pickLabel.classList.remove('hidden');
+        card.classList.remove('hidden');
+      } else {
+        moodPill.classList.add('hidden');
+        moodPicker.classList.remove('hidden');
+        pickLabel.textContent = 'Ready when you are';
+        pickLabel.classList.add('hidden');
+        card.classList.add('hidden');
+        card.classList.remove('revealed');
+        moodStep2.classList.add('hidden');
+        moodStep1.classList.remove('hidden');
+        currentPick = null;
+      }
+    }
+
+    document.getElementById('mood-change-btn').addEventListener('click', () => {
+      clearSessionMood();
+      showMoodCheckOrPickCard();
+    });
+
+    renderStep1();
+    showMoodCheckOrPickCard();
 
     function setIcon(pick) {
       iconWrap.innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${pick.icon}</svg>`;
     }
 
-    // Weight picks toward the user's saved interests (from onboarding), so
-    // Spin favors matching tags instead of being purely random.
-    function pickPersonalized() {
-      const savedInterests = JSON.parse(localStorage.getItem('userInterests') || 'null');
-      if (!savedInterests || savedInterests.length === 0) {
-        return picks[Math.floor(Math.random() * picks.length)];
-      }
-      const weighted = [];
-      picks.forEach(pick => {
-        const overlap = pick.tags.filter(t => savedInterests.includes(t)).length;
-        const weight = 1 + overlap * 2;
-        for (let w = 0; w < weight; w++) weighted.push(pick);
-      });
-      return weighted[Math.floor(Math.random() * weighted.length)];
+    function currentPool() {
+      return getPool(TAXONOMY, getSessionMood(), getSessionSubcategory());
+    }
+
+    function toPick(item) {
+      return {
+        icon: item.categoryIcon,
+        title: item.title,
+        desc: item.description,
+        tags: [item.categoryLabel, item.subcategoryLabel]
+      };
     }
 
     function runSpin() {
+      const pool = currentPool();
+      if (pool.length === 0) return;
+
       spinBtn.disabled = true;
       spinAgainBtn.disabled = true;
       pickLabel.textContent = 'Spinning...';
       iconWrap.classList.add('shuffling');
+      shuffleTitle.classList.remove('hidden');
 
-      const finalPick = pickPersonalized();
+      const finalPick = toPick(pickRandomItem(pool));
       const delays = [80, 80, 90, 100, 120, 150, 190, 240, 300, 380];
       let i = 0;
 
       function tick() {
-        setIcon(picks[Math.floor(Math.random() * picks.length)]);
+        const shuffled = toPick(pickRandomItem(pool));
+        setIcon(shuffled);
+        shuffleTitle.textContent = shuffled.title;
         i++;
         if (i < delays.length) {
           setTimeout(tick, delays[i]);
@@ -294,6 +409,7 @@
     function finishSpin(pick) {
       currentPick = pick;
       iconWrap.classList.remove('shuffling');
+      shuffleTitle.classList.add('hidden');
       setIcon(pick);
       document.getElementById('pick-title').textContent = pick.title;
       document.getElementById('pick-desc').textContent = pick.desc;
@@ -303,8 +419,6 @@
       spinBtn.disabled = false;
       spinAgainBtn.disabled = false;
     }
-
-    let currentPick = null;
 
     spinBtn.addEventListener('click', runSpin);
     spinAgainBtn.addEventListener('click', () => {
@@ -325,6 +439,8 @@
     function showOngoing(activity) {
       pickLabel.classList.add('hidden');
       card.classList.add('hidden');
+      moodPicker.classList.add('hidden');
+      moodPill.classList.add('hidden');
       document.getElementById('ongoing-card').classList.remove('hidden');
       document.getElementById('ongoing-icon-wrap').innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fffbc9"/>${activity.icon}</svg>`;
       document.getElementById('ongoing-title').textContent = activity.title;
@@ -333,8 +449,7 @@
     function clearOngoing() {
       localStorage.removeItem('ongoingActivity');
       document.getElementById('ongoing-card').classList.add('hidden');
-      pickLabel.classList.remove('hidden');
-      card.classList.remove('hidden');
+      showMoodCheckOrPickCard();
     }
 
     const ongoingRaw = localStorage.getItem('ongoingActivity');
