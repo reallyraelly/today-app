@@ -53,6 +53,12 @@
     overflow-x: auto;
     padding-bottom: 4px;
     margin-bottom: var(--space-5);
+    /* Setting overflow-x without overflow-y makes overflow-y compute to
+       auto too (CSS overflow interlock rule) — some renderers then fail
+       to size a flex row's height from its children once both axes are
+       non-visible, collapsing it to just this padding. min-height is a
+       floor that sidesteps that miscalculation regardless of cause. */
+    min-height: 36px;
   }
   .filter-chip {
     flex-shrink: 0;
